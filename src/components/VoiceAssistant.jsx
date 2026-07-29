@@ -247,16 +247,7 @@ const VoiceAssistant = ({ onStateChange }) => {
     };
 
     try {
-      // Enhance volume to 200% using Web Audio API
-      if (!wakeAudioRef.current.audioCtx) {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const track = audioCtx.createMediaElementSource(wakeAudioRef.current);
-        const gainNode = audioCtx.createGain();
-        gainNode.gain.value = 2.0; // 200% volume
-        track.connect(gainNode).connect(audioCtx.destination);
-        wakeAudioRef.current.audioCtx = audioCtx;
-      }
-      wakeAudioRef.current.audioCtx.resume();
+      wakeAudioRef.current.volume = 1.0;
       wakeAudioRef.current.currentTime = 0;
       wakeAudioRef.current.addEventListener('ended', onAudioEnd);
       wakeAudioRef.current.play().catch((err) => {
@@ -291,37 +282,6 @@ const VoiceAssistant = ({ onStateChange }) => {
 
   return (
     <div className="va">
-      {/* Language selector */}
-      <div className="lang-row">
-        {LANGUAGES.map(l => (
-          <button
-            key={l.code}
-            className={`lang-btn ${lang === l.code ? 'lang-btn--active' : ''}`}
-            onClick={() => switchLang(l.code)}
-            title={l.label}
-          >
-            <span className="lang-flag">{l.flag}</span>
-            <span className="lang-short">{l.short}</span>
-          </button>
-        ))}
-      </div>
-
-      {/* Status label */}
-      <div className={`va-status va-status--${state}`}>
-        <span className="va-dot" />
-        {LABELS[state]}
-      </div>
-
-      {/* Live transcript / reply */}
-      <div className="va-caption">
-        {(state === 'listening' || state === 'thinking') && transcript && (
-          <p className="va-caption__user">"{transcript}"</p>
-        )}
-        {state === 'speaking' && reply && (
-          <p className="va-caption__reply">{reply}{reply.length >= 130 ? '…' : ''}</p>
-        )}
-      </div>
-
       {/* Wake / Sleep controls */}
       <div className="va-controls">
         {!awake ? (
