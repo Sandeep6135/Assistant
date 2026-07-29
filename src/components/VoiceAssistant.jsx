@@ -4,35 +4,42 @@ import './VoiceAssistant.css';
 
 // Removed LANGUAGES constant as it is no longer needed
 
-/* ── Detect script of a response string ─────────── */
-function detectResponseLang(text) {
-  if (/[\u0A80-\u0AFF]/.test(text)) return 'gu-IN'; // Gujarati script
-  if (/[\u0900-\u097F]/.test(text)) return 'hi-IN'; // Devanagari (Hindi / Marathi)
-  return 'en-US';
-}
+const ELEVENLABS_API_KEY = import.meta.env.VITE_ELEVENLABS_API_KEY;
+// Adam: pNInz6obpgDQGcFmaJgB (Deep, calm, relaxing male voice)
+const VOICE_ID = 'pNInz6obpgDQGcFmaJgB';
 
-/* ── Pick Native Voice ─────────────── */
-function pickVoice(lang, voices) {
-  const langMap = {
-    'hi-IN': ['hi-IN', 'hi'],
-    'gu-IN': ['gu-IN', 'gu'],
-    'mr-IN': ['mr-IN', 'mr'],
-    'en-US': [],
-  };
-  const prefs = langMap[lang] || [];
-
-  for (const lc of prefs) {
-    const v = voices.find(v => v.lang.startsWith(lc));
-    if (v) return v;
+async function fetchElevenLabsAudio(text) {
+  if (!ELEVENLABS_API_KEY) {
+    console.warn("ElevenLabs API Key is missing.");
+    return null;
   }
-  return (
-    voices.find(v => v.name.includes('Google UK English Male')) ||
-    voices.find(v => v.name.includes('Microsoft David')) ||
-    voices.find(v => v.name.includes('Microsoft Ravi')) ||
-    voices.find(v => v.name.includes('Google US English')) ||
-    voices.find(v => v.lang.startsWith('en')) ||
-    voices[0]
-  );
+  
+  const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}`, {
+    method: 'POST',
+    headers: {
+      'Accept': 'audio/mpeg',
+      'xi-api-key': ELEVENLABS_API_KEY,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      text: text,
+      model_id: "eleven_multilingual_v2",
+      voice_settings: {
+        stability: 0.5,
+        similarity_boost: 0.75,
+        style: 0.0,
+        use_speaker_boost: true
+      }
+    })
+  });
+  
+  if (!response.ok) {
+    console.error("ElevenLabs Error:", await response.text());
+    return null;
+  }
+  
+  const blob = await response.blob();
+  return URL.createObjectURL(blob);
 }
 
 /* ── Strip markdown / symbols before TTS ─────────── */
@@ -61,7 +68,7 @@ const VoiceAssistant = ({ onStateChange }) => {
   const [reply, setReply]         = useState('');
   const [awake, setAwake]         = useState(false);
 
-  const synthRef      = useRef(window.speechSynthesis);
+  const currentAudioRef = useRef(null);
   const recRef        = useRef(null);
   const stateRef      = useRef('resting');
   const wakeAudioRef  = useRef(new Audio('/wakeup.wav'));
@@ -78,45 +85,46 @@ const VoiceAssistant = ({ onStateChange }) => {
     onStateChange?.(s);
   }, [onStateChange]);
 
-  /* ── Load voices ── */
-  useEffect(() => {
-    const load = () => synthRef.current?.getVoices();
-    load();
-    window.speechSynthesis.onvoiceschanged = load;
-    return () => { window.speechSynthesis.onvoiceschanged = null; };
-  }, []);
-
   /* ── TTS: speak one piece ── */
-  const speakOne = useCallback((text, responseLang) => {
-    return new Promise((resolve) => {
+  const speakOne = useCallback(async (text) => {
+    return new Promise(async (resolve) => {
       const clean = cleanText(text);
       if (!clean) { resolve(); return; }
 
-      const utt = new SpeechSynthesisUtterance(clean);
-      // Deep Acoustic Tuning (Deepens female voices, incredibly calm pace)
-      utt.rate   = 0.85;
-      utt.pitch  = 0.7;
-      utt.volume = 1.0;
-      utt.lang   = responseLang;
+      const audioUrl = await fetchElevenLabsAudio(clean);
+      if (!audioUrl) { resolve(); return; }
 
-      const voices = synthRef.current?.getVoices() || [];
-      utt.voice = pickVoice(responseLang, voices);
-
-      utt.onend   = () => resolve();
-      utt.onerror = () => resolve();
-      synthRef.current?.speak(utt);
+      const audio = new Audio(audioUrl);
+      currentAudioRef.current = audio;
+      
+      audio.onended = () => {
+        URL.revokeObjectURL(audioUrl);
+        currentAudioRef.current = null;
+        resolve();
+      };
+      
+      audio.onerror = () => {
+        URL.revokeObjectURL(audioUrl);
+        currentAudioRef.current = null;
+        resolve();
+      };
+      
+      audio.play().catch(e => {
+        console.error("Audio play error:", e);
+        resolve();
+      });
     });
   }, []);
 
   /* ── Drain the sentence queue ── */
-  const drainQueue = useCallback(async (responseLang) => {
+  const drainQueue = useCallback(async () => {
     if (isSpeakingRef.current) return;
     isSpeakingRef.current = true;
     setS('speaking');
 
     while (speakQueueRef.current.length > 0) {
       const sentence = speakQueueRef.current.shift();
-      await speakOne(sentence, responseLang);
+      await speakOne(sentence);
     }
 
     isSpeakingRef.current = false;
@@ -131,12 +139,14 @@ const VoiceAssistant = ({ onStateChange }) => {
     setTranscript(query);
     setReply('');
     setS('thinking');
-    synthRef.current?.cancel();
+    if (currentAudioRef.current) {
+      currentAudioRef.current.pause();
+      currentAudioRef.current = null;
+    }
     isSpeakingRef.current = false;
 
     let buffer = '';
     let full   = '';
-    let responseLang = 'en-IN'; // default
     speakQueueRef.current = [];
 
     try {
@@ -144,29 +154,25 @@ const VoiceAssistant = ({ onStateChange }) => {
         buffer += chunk;
         full   += chunk;
 
-        // Detect language from first meaningful chunk
-        if (full.length > 10 && responseLang === 'en-IN') {
-          responseLang = detectResponseLang(full) || 'en-IN';
-        }
-
-        // Flush on commas and full stops to drastically reduce latency
-        const sentences = buffer.match(/[^.!?।,،\n]+[.!?।,،\n]+/g);
+        // Flush on full sentences. ElevenLabs needs sentence context for perfect intonation.
+        // We revert to splitting on . ! ? । to allow natural flow.
+        const sentences = buffer.match(/[^.!?।\n]+[.!?।\n]+/g);
         if (sentences) {
           sentences.forEach(s => speakQueueRef.current.push(s));
-          buffer = buffer.replace(/[^.!?।,،\n]+[.!?।,،\n]+/g, '');
-          if (!isSpeakingRef.current) drainQueue(responseLang);
+          buffer = buffer.replace(/[^.!?।\n]+[.!?।\n]+/g, '');
+          if (!isSpeakingRef.current) drainQueue();
         }
       }
       if (buffer.trim()) {
         speakQueueRef.current.push(buffer);
-        if (!isSpeakingRef.current) drainQueue(responseLang);
+        if (!isSpeakingRef.current) drainQueue();
       }
       setReply(cleanText(full).slice(0, 130));
     } catch (err) {
       console.error(err);
       const errMsg = 'Sorry, I ran into an error. Please try again.';
       speakQueueRef.current = [errMsg];
-      drainQueue('en-IN');
+      drainQueue();
     }
   }, [drainQueue]);
 
