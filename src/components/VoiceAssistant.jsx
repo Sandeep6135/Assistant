@@ -236,9 +236,21 @@ const VoiceAssistant = ({ onStateChange }) => {
   const wake = useCallback(() => {
     // Play wakeup sound immediately — pre-loaded, zero delay
     try {
+      // Enhance volume to 200% using Web Audio API
+      if (!wakeAudioRef.current.audioCtx) {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const track = audioCtx.createMediaElementSource(wakeAudioRef.current);
+        const gainNode = audioCtx.createGain();
+        gainNode.gain.value = 2.0; // 200% volume
+        track.connect(gainNode).connect(audioCtx.destination);
+        wakeAudioRef.current.audioCtx = audioCtx;
+      }
+      wakeAudioRef.current.audioCtx.resume();
       wakeAudioRef.current.currentTime = 0;
       wakeAudioRef.current.play().catch(() => {});
-    } catch {}
+    } catch (err) {
+      console.warn("Audio enhancement failed:", err);
+    }
 
     setAwake(true);
     awakeRef.current = true;
