@@ -2,8 +2,6 @@
 
 body {
   font-family: 'Inter', system-ui, sans-serif;
-  background: #000;
-  color: #fff;
   min-height: 100vh;
   overflow: hidden;
   -webkit-font-smoothing: antialiased;
@@ -25,13 +23,13 @@ body {
 .bg-grid {
   position: fixed;
   inset: 0;
-  background-image: radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(0,0,0,0.04) 1px, transparent 1px);
   background-size: 32px 32px;
   pointer-events: none;
   z-index: 0;
 }
 
-/* ── Ambient glow that shifts per state ─── */
+/* ── Ambient glow that shifts per state (Minimalist) ─── */
 .bg-glow {
   position: fixed;
   inset: 0;
@@ -39,12 +37,12 @@ body {
   z-index: 0;
   transition: background 0.8s ease;
 }
-.bg-glow--resting  { background: radial-gradient(ellipse 600px 400px at 50% 45%, rgba(0,40,40,0.3) 0%, transparent 80%); }
-.bg-glow--idle     { background: radial-gradient(ellipse 600px 400px at 50% 45%, rgba(0,60,90,0.25) 0%, transparent 80%); }
-.bg-glow--listening{ background: radial-gradient(ellipse 700px 500px at 50% 45%, rgba(0,100,160,0.3) 0%, transparent 80%); }
-.bg-glow--thinking { background: radial-gradient(ellipse 500px 350px at 50% 45%, rgba(30,30,30,0.4) 0%, transparent 80%); }
-.bg-glow--speaking { background: radial-gradient(ellipse 700px 500px at 50% 45%, rgba(120,0,80,0.3) 0%, transparent 80%); }
-.bg-glow--angry    { background: radial-gradient(ellipse 700px 500px at 50% 45%, rgba(180,0,0,0.4) 0%, transparent 80%); }
+.bg-glow--resting  { background: radial-gradient(ellipse 600px 400px at 50% 45%, rgba(0,0,0,0.02) 0%, transparent 80%); }
+.bg-glow--idle     { background: radial-gradient(ellipse 600px 400px at 50% 45%, rgba(0,0,0,0.04) 0%, transparent 80%); }
+.bg-glow--listening{ background: radial-gradient(ellipse 700px 500px at 50% 45%, rgba(0,0,0,0.06) 0%, transparent 80%); }
+.bg-glow--thinking { background: radial-gradient(ellipse 500px 350px at 50% 45%, rgba(0,0,0,0.03) 0%, transparent 80%); }
+.bg-glow--speaking { background: radial-gradient(ellipse 700px 500px at 50% 45%, rgba(0,0,0,0.05) 0%, transparent 80%); }
+.bg-glow--angry    { background: radial-gradient(ellipse 700px 500px at 50% 45%, rgba(200,0,0,0.03) 0%, transparent 80%); }
 
 /* ── Header ──────────────────────────────── */
 .hdr {

@@ -5,40 +5,37 @@
   width: 340px;
   height: 260px;
   border-radius: 40px;
-  background: #0a0a0a;
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: #0f0f0f;
+  border: 1px solid rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 28px;
   position: relative;
-  transition: border-color 0.5s ease, box-shadow 0.5s ease;
+  transition: all 0.5s ease;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.08);
 }
 
 .face-panel--resting {
-  border-color: rgba(255,255,255,0.04);
-  box-shadow: none;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.04);
 }
 .face-panel--idle {
-  border-color: rgba(0, 200, 255, 0.15);
-  box-shadow: 0 0 40px rgba(0, 200, 255, 0.04);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.1);
 }
 .face-panel--listening {
-  border-color: rgba(0, 200, 255, 0.4);
-  box-shadow: 0 0 60px rgba(0, 200, 255, 0.12), inset 0 0 40px rgba(0,200,255,0.03);
+  box-shadow: 0 16px 50px rgba(0,0,0,0.15);
+  transform: translateY(-2px);
 }
 .face-panel--thinking {
-  border-color: rgba(255,255,255,0.15);
-  box-shadow: 0 0 30px rgba(255,255,255,0.04);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.06);
 }
 .face-panel--speaking {
-  border-color: rgba(220, 50, 150, 0.5);
-  box-shadow: 0 0 80px rgba(220, 50, 150, 0.2), inset 0 0 50px rgba(220,50,150,0.04);
+  box-shadow: 0 16px 50px rgba(0,0,0,0.12);
+  transform: scale(1.02);
 }
 .face-panel--angry {
-  border-color: rgba(255, 0, 0, 0.4);
-  box-shadow: 0 0 60px rgba(255, 0, 0, 0.15), inset 0 0 40px rgba(255,0,0,0.05);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.15);
 }
 
 /* ═══════════════════════════════════════════
@@ -62,36 +59,30 @@
 
 /* ── Resting: thin horizontal bar (closed eyes) ── */
 .eye--resting {
-  width: 80px;
-  height: 4px;
+  width: 60px;
+  height: 3px;
   border-radius: 2px;
-  background: #000;
-  box-shadow: inset 0 2px 5px rgba(0,0,0,0.8);
-  border-bottom: 2px solid #222;
+  background: #fff;
+  opacity: 0.3;
 }
 
-/* ── Idle: medium rounded square, teal ── */
+/* ── Idle: medium rounded square, white ── */
 .eye--idle {
   width: 88px;
   height: 76px;
   border-radius: 26px;
-  background: linear-gradient(145deg, #0d2a35, #0a1e28);
-  box-shadow:
-    0 0 30px rgba(0, 180, 220, 0.3),
-    inset 0 0 20px rgba(0,180,220,0.08);
+  background: #fff;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.3);
   animation: idleBlink 5s infinite;
 }
 
-/* ── Listening: bright teal pulse ── */
+/* ── Listening: bright white pulse ── */
 .eye--listening {
   width: 92px;
   height: 80px;
   border-radius: 28px;
-  background: linear-gradient(145deg, #003d52, #00263d);
-  box-shadow:
-    0 0 50px rgba(0, 210, 255, 0.5),
-    0 0 20px rgba(0, 210, 255, 0.3),
-    inset 0 0 20px rgba(0,210,255,0.1);
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
   animation: listenPulse 0.8s ease-in-out infinite alternate;
 }
 
@@ -100,33 +91,28 @@
   width: 88px;
   height: 76px;
   border-radius: 26px;
-  background: linear-gradient(145deg, #1a1a1a, #111);
-  box-shadow: 0 0 20px rgba(255,255,255,0.08);
+  background: #eee;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.2);
   animation: thinkFlicker 2s ease-in-out infinite;
 }
 
-/* ── Speaking: large glowing pink/magenta ── */
+/* ── Speaking: large bright white ── */
 .eye--speaking {
   width: 106px;
   height: 90px;
   border-radius: 34px;
-  background: linear-gradient(145deg, #3d0030, #28001f);
-  box-shadow:
-    0 0 80px rgba(220, 50, 150, 0.7),
-    0 0 30px rgba(220, 50, 150, 0.4),
-    inset 0 0 30px rgba(220, 50, 150, 0.15);
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
   animation: speakGlow 0.35s ease-in-out infinite alternate;
 }
 
-/* ── Angry: slanted, red glow, narrowed ── */
+/* ── Angry: slanted, dark grey ── */
 .eye--angry {
   width: 92px;
   height: 60px;
   border-radius: 12px;
-  background: linear-gradient(145deg, #5a0000, #3a0000);
-  box-shadow: 
-    0 0 50px rgba(255, 30, 30, 0.6),
-    inset 0 0 20px rgba(255, 30, 30, 0.2);
+  background: #ddd;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.3);
   animation: angryShake 0.1s ease-in-out infinite alternate;
 }
 .eyes-row .eye:first-child.eye--angry { transform: rotate(15deg); }
@@ -147,16 +133,16 @@
   92%            { transform: scaleY(0.06); }
 }
 @keyframes listenPulse {
-  from { box-shadow: 0 0 40px rgba(0,210,255,0.4), inset 0 0 15px rgba(0,210,255,0.08); }
-  to   { box-shadow: 0 0 70px rgba(0,210,255,0.7), inset 0 0 30px rgba(0,210,255,0.15); }
+  from { transform: scale(1); }
+  to   { transform: scale(1.05); }
 }
 @keyframes thinkFlicker {
   0%, 100% { opacity: 0.7; }
   50%       { opacity: 1; }
 }
 @keyframes speakGlow {
-  from { box-shadow: 0 0 60px rgba(220,50,150,0.5), inset 0 0 20px rgba(220,50,150,0.1); }
-  to   { box-shadow: 0 0 100px rgba(220,50,150,0.9), inset 0 0 40px rgba(220,50,150,0.2); }
+  from { transform: scale(1); }
+  to   { transform: scale(1.08); }
 }
 
 /* ─── Pupil ── */
@@ -197,22 +183,20 @@
 .mouth-line--idle {
   width: 50px;
   height: 4px;
-  background: rgba(0, 200, 220, 0.4);
+  background: #fff;
   border-radius: 0 0 30px 30px;
 }
 .mouth-line--listening {
   width: 66px;
   height: 4px;
-  background: rgba(0, 220, 255, 0.7);
-  box-shadow: 0 0 12px rgba(0,220,255,0.5);
+  background: #fff;
   animation: lListen 0.7s ease-in-out infinite alternate;
 }
 .mouth-line--angry {
   width: 60px;
   height: 6px;
-  background: rgba(255, 50, 50, 0.8);
+  background: #fff;
   border-radius: 30px 30px 0 0; /* Sad/Angry curve */
-  box-shadow: 0 0 12px rgba(255,50,50,0.5);
   transform: translateY(8px);
 }
 @keyframes lListen {
@@ -222,9 +206,10 @@
 
 .mouth-rest {
   width: 40px;
-  height: 3px;
-  background: #1a3a3a;
-  border-radius: 3px;
+  height: 2px;
+  background: #444;
+  border-radius: 2px;
+  opacity: 0.5;
 }
 
 /* Speaking bars */
@@ -236,14 +221,13 @@
 }
 .mbar {
   width: 4px;
-  background: linear-gradient(to top, #ff3399, #ff88cc);
+  background: #fff;
   border-radius: 2px;
   height: 5px;
-  box-shadow: 0 0 6px rgba(255,50,150,0.5);
   animation: mbarWave ease-in-out infinite alternate;
 }
 @keyframes mbarWave {
-  0%   { height: 4px;  opacity: 0.6; }
+  0%   { height: 4px;  opacity: 0.4; }
   100% { height: 26px; opacity: 1; }
 }
 

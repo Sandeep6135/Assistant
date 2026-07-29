@@ -106,37 +106,38 @@
 
 /* ── Buttons ─────────────────────────────────── */
 .va-controls {
-  margin-top: 4px;
+  margin-top: 24px;
 }
 
 .btn {
   border: none;
   border-radius: 50px;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 500;
-  padding: 12px 28px;
+  padding: 14px 32px;
   cursor: pointer;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.03em;
   transition: all 0.2s ease;
+  font-family: inherit;
 }
 
 .btn--wake {
-  background: #fff;
-  color: #000;
-  box-shadow: 0 4px 20px rgba(255,255,255,0.1);
+  background: #111;
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.1);
 }
 .btn--wake:hover {
-  background: #f0f0f0;
-  transform: translateY(-1px);
-  box-shadow: 0 8px 30px rgba(255,255,255,0.15);
+  background: #222;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
 }
 
 .btn--sleep {
   background: transparent;
-  color: #555;
-  border: 1px solid #222;
+  color: #666;
+  border: 1px solid #ddd;
 }
 .btn--sleep:hover {
-  border-color: #444;
-  color: #888;
+  border-color: #bbb;
+  color: #333;
 }
