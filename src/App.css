@@ -1,0 +1,78 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: #000;
+  color: #fff;
+  min-height: 100vh;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Full-screen layout ────────────────── */
+.app {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 36px 20px 44px;
+}
+
+/* ── Subtle dot-grid background ─────────── */
+.bg-grid {
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Ambient glow that shifts per state ─── */
+.bg-glow {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  transition: background 0.8s ease;
+}
+.bg-glow--resting  { background: radial-gradient(ellipse 600px 400px at 50% 45%, rgba(0,40,40,0.3) 0%, transparent 80%); }
+.bg-glow--idle     { background: radial-gradient(ellipse 600px 400px at 50% 45%, rgba(0,60,90,0.25) 0%, transparent 80%); }
+.bg-glow--listening{ background: radial-gradient(ellipse 700px 500px at 50% 45%, rgba(0,100,160,0.3) 0%, transparent 80%); }
+.bg-glow--thinking { background: radial-gradient(ellipse 500px 350px at 50% 45%, rgba(30,30,30,0.4) 0%, transparent 80%); }
+.bg-glow--speaking { background: radial-gradient(ellipse 700px 500px at 50% 45%, rgba(120,0,80,0.3) 0%, transparent 80%); }
+
+/* ── Header ──────────────────────────────── */
+.hdr {
+  text-align: center;
+  z-index: 1;
+  user-select: none;
+}
+.hdr__title {
+  font-size: clamp(1.4rem, 4vw, 2.2rem);
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  color: #fff;
+  text-transform: uppercase;
+}
+.hdr__sub {
+  margin-top: 8px;
+  font-size: clamp(0.6rem, 1.5vw, 0.72rem);
+  color: #333;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* ── Main ────────────────────────────────── */
+.main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  z-index: 1;
+  flex-grow: 1;
+  justify-content: center;
+}

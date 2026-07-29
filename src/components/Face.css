@@ -1,0 +1,229 @@
+/* ═══════════════════════════════════════════
+   FACE PANEL
+═══════════════════════════════════════════ */
+.face-panel {
+  width: 340px;
+  height: 260px;
+  border-radius: 40px;
+  background: #0a0a0a;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  position: relative;
+  transition: border-color 0.5s ease, box-shadow 0.5s ease;
+}
+
+.face-panel--resting {
+  border-color: rgba(255,255,255,0.04);
+  box-shadow: none;
+}
+.face-panel--idle {
+  border-color: rgba(0, 200, 255, 0.15);
+  box-shadow: 0 0 40px rgba(0, 200, 255, 0.04);
+}
+.face-panel--listening {
+  border-color: rgba(0, 200, 255, 0.4);
+  box-shadow: 0 0 60px rgba(0, 200, 255, 0.12), inset 0 0 40px rgba(0,200,255,0.03);
+}
+.face-panel--thinking {
+  border-color: rgba(255,255,255,0.15);
+  box-shadow: 0 0 30px rgba(255,255,255,0.04);
+}
+.face-panel--speaking {
+  border-color: rgba(220, 50, 150, 0.5);
+  box-shadow: 0 0 80px rgba(220, 50, 150, 0.2), inset 0 0 50px rgba(220,50,150,0.04);
+}
+
+/* ═══════════════════════════════════════════
+   EYES ROW
+═══════════════════════════════════════════ */
+.eyes-row {
+  display: flex;
+  gap: 28px;
+  align-items: center;
+}
+
+/* ── Base eye ── */
+.eye {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  overflow: hidden;
+}
+
+/* ── Resting: thin horizontal bar ── */
+.eye--resting {
+  width: 80px;
+  height: 6px;
+  border-radius: 4px;
+  background: #1a4a4a;
+  box-shadow: 0 0 10px rgba(0,180,180,0.2);
+}
+
+/* ── Idle: medium rounded square, teal ── */
+.eye--idle {
+  width: 88px;
+  height: 76px;
+  border-radius: 26px;
+  background: linear-gradient(145deg, #0d2a35, #0a1e28);
+  box-shadow:
+    0 0 30px rgba(0, 180, 220, 0.3),
+    inset 0 0 20px rgba(0,180,220,0.08);
+  animation: idleBlink 5s infinite;
+}
+
+/* ── Listening: bright teal pulse ── */
+.eye--listening {
+  width: 92px;
+  height: 80px;
+  border-radius: 28px;
+  background: linear-gradient(145deg, #003d52, #00263d);
+  box-shadow:
+    0 0 50px rgba(0, 210, 255, 0.5),
+    0 0 20px rgba(0, 210, 255, 0.3),
+    inset 0 0 20px rgba(0,210,255,0.1);
+  animation: listenPulse 0.8s ease-in-out infinite alternate;
+}
+
+/* ── Thinking: dimmed white ── */
+.eye--thinking {
+  width: 88px;
+  height: 76px;
+  border-radius: 26px;
+  background: linear-gradient(145deg, #1a1a1a, #111);
+  box-shadow: 0 0 20px rgba(255,255,255,0.08);
+  animation: thinkFlicker 2s ease-in-out infinite;
+}
+
+/* ── Speaking: large glowing pink/magenta ── */
+.eye--speaking {
+  width: 106px;
+  height: 90px;
+  border-radius: 34px;
+  background: linear-gradient(145deg, #3d0030, #28001f);
+  box-shadow:
+    0 0 80px rgba(220, 50, 150, 0.7),
+    0 0 30px rgba(220, 50, 150, 0.4),
+    inset 0 0 30px rgba(220, 50, 150, 0.15);
+  animation: speakGlow 0.35s ease-in-out infinite alternate;
+}
+
+@keyframes idleBlink {
+  0%, 90%, 100% { transform: scaleY(1); }
+  92%            { transform: scaleY(0.06); }
+}
+@keyframes listenPulse {
+  from { box-shadow: 0 0 40px rgba(0,210,255,0.4), inset 0 0 15px rgba(0,210,255,0.08); }
+  to   { box-shadow: 0 0 70px rgba(0,210,255,0.7), inset 0 0 30px rgba(0,210,255,0.15); }
+}
+@keyframes thinkFlicker {
+  0%, 100% { opacity: 0.7; }
+  50%       { opacity: 1; }
+}
+@keyframes speakGlow {
+  from { box-shadow: 0 0 60px rgba(220,50,150,0.5), inset 0 0 20px rgba(220,50,150,0.1); }
+  to   { box-shadow: 0 0 100px rgba(220,50,150,0.9), inset 0 0 40px rgba(220,50,150,0.2); }
+}
+
+/* ─── Pupil ── */
+.pupil {
+  width: 40px;
+  height: 40px;
+  background: rgba(0,0,0,0.6);
+  border-radius: 50%;
+  transition: transform 0.08s ease-out;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding: 6px;
+}
+.pupil-shine {
+  width: 10px;
+  height: 10px;
+  background: rgba(255,255,255,0.5);
+  border-radius: 50%;
+}
+
+/* ═══════════════════════════════════════════
+   MOUTH
+═══════════════════════════════════════════ */
+.mouth {
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Line states */
+.mouth-line {
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+.mouth-line--idle {
+  width: 50px;
+  height: 4px;
+  background: rgba(0, 200, 220, 0.4);
+  border-radius: 0 0 30px 30px;
+}
+.mouth-line--listening {
+  width: 66px;
+  height: 4px;
+  background: rgba(0, 220, 255, 0.7);
+  box-shadow: 0 0 12px rgba(0,220,255,0.5);
+  animation: lListen 0.7s ease-in-out infinite alternate;
+}
+@keyframes lListen {
+  from { width: 44px; opacity: 0.6; }
+  to   { width: 70px; opacity: 1; }
+}
+
+.mouth-rest {
+  width: 40px;
+  height: 3px;
+  background: #1a3a3a;
+  border-radius: 3px;
+}
+
+/* Speaking bars */
+.mouth-bars {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 28px;
+}
+.mbar {
+  width: 4px;
+  background: linear-gradient(to top, #ff3399, #ff88cc);
+  border-radius: 2px;
+  height: 5px;
+  box-shadow: 0 0 6px rgba(255,50,150,0.5);
+  animation: mbarWave ease-in-out infinite alternate;
+}
+@keyframes mbarWave {
+  0%   { height: 4px;  opacity: 0.6; }
+  100% { height: 26px; opacity: 1; }
+}
+
+/* Thinking dots */
+.mouth-dots {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+}
+.mouth-dots span {
+  width: 7px;
+  height: 7px;
+  background: rgba(255,255,255,0.5);
+  border-radius: 50%;
+  animation: dotUp 0.8s ease-in-out infinite;
+}
+@keyframes dotUp {
+  0%, 100% { transform: translateY(0); opacity: 0.4; }
+  50%       { transform: translateY(-7px); opacity: 1; }
+}

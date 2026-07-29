@@ -1,0 +1,54 @@
+.eyes-container {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.eye {
+  width: 80px;
+  height: 80px;
+  background-color: white;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  box-shadow: 0 4px 10px rgba(255, 255, 255, 0.1), inset 0 0 10px rgba(0, 0, 0, 0.5);
+  border: 4px solid #333;
+  overflow: hidden;
+  /* Blink animation */
+  animation: blink 4s infinite;
+}
+
+.pupil {
+  width: 40px;
+  height: 40px;
+  background-color: black;
+  border-radius: 50%;
+  position: absolute;
+  /* Smooth transition for movement */
+  transition: transform 0.1s ease-out;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  padding: 5px;
+}
+
+.pupil-highlight {
+  width: 10px;
+  height: 10px;
+  background-color: white;
+  border-radius: 50%;
+  opacity: 0.8;
+}
+
+@keyframes blink {
+  0%, 96%, 100% {
+    transform: scaleY(1);
+  }
+  98% {
+    transform: scaleY(0.1);
+  }
+}

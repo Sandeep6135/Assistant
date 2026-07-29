@@ -1,0 +1,140 @@
+/* ── Language selector ─────────────────────────── */
+.lang-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.lang-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 14px;
+  border-radius: 30px;
+  border: 1px solid #222;
+  background: transparent;
+  color: #555;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.lang-btn:hover {
+  border-color: #444;
+  color: #aaa;
+}
+.lang-btn--active {
+  border-color: rgba(0, 200, 255, 0.5);
+  color: #00ccff;
+  background: rgba(0, 200, 255, 0.06);
+  box-shadow: 0 0 12px rgba(0, 200, 255, 0.1);
+}
+.lang-flag { font-size: 13px; }
+.lang-short { font-size: 10px; }
+
+.va {
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+}
+
+/* ── Status label ─────────────────────────── */
+.va-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  transition: color 0.4s ease;
+  color: #444;
+}
+.va-status--resting  { color: #333; }
+.va-status--idle     { color: #00aacc; }
+.va-status--listening{ color: #00ddff; }
+.va-status--thinking { color: #888; }
+.va-status--speaking { color: #dd3399; }
+
+.va-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+.va-status--listening .va-dot { animation: dotBlink 0.6s ease-in-out infinite; }
+.va-status--speaking  .va-dot { animation: dotBlink 0.35s ease-in-out infinite; }
+.va-status--thinking  .va-dot { animation: dotBlink 1s ease-in-out infinite; }
+
+@keyframes dotBlink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.1; }
+}
+
+/* ── Caption ────────────────────────────────── */
+.va-caption {
+  min-height: 44px;
+  max-width: 360px;
+  text-align: center;
+  padding: 0 16px;
+}
+.va-caption__user {
+  margin: 0;
+  font-size: 15px;
+  color: #aaa;
+  font-style: italic;
+  animation: fadeUp 0.3s ease;
+}
+.va-caption__reply {
+  margin: 0;
+  font-size: 14px;
+  color: #666;
+  animation: fadeUp 0.3s ease;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Buttons ─────────────────────────────────── */
+.va-controls {
+  margin-top: 4px;
+}
+
+.btn {
+  border: none;
+  border-radius: 50px;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 12px 28px;
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  transition: all 0.2s ease;
+}
+
+.btn--wake {
+  background: #fff;
+  color: #000;
+  box-shadow: 0 4px 20px rgba(255,255,255,0.1);
+}
+.btn--wake:hover {
+  background: #f0f0f0;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 30px rgba(255,255,255,0.15);
+}
+
+.btn--sleep {
+  background: transparent;
+  color: #555;
+  border: 1px solid #222;
+}
+.btn--sleep:hover {
+  border-color: #444;
+  color: #888;
+}
