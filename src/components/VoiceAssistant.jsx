@@ -4,33 +4,14 @@ import './VoiceAssistant.css';
 
 // Removed LANGUAGES constant as it is no longer needed
 
-/* ── Detect script of a response string ─────────── */
-function detectResponseLang(text) {
-  if (/[\u0A80-\u0AFF]/.test(text)) return 'gu-IN'; // Gujarati script
-  if (/[\u0900-\u097F]/.test(text)) return 'hi-IN'; // Devanagari (Hindi / Marathi)
-  return 'en-US';
-}
-
-/* ── Pick best available TTS voice ──────────────── */
-function pickVoice(lang, voices) {
-  const langMap = {
-    'hi-IN': ['hi-IN', 'hi'],
-    'gu-IN': ['gu-IN', 'gu'],
-    'mr-IN': ['mr-IN', 'mr'],
-    'en-US': [],
-  };
-  const prefs = langMap[lang] || [];
-
-  // Try to find a voice matching preferred lang
-  for (const lc of prefs) {
-    const v = voices.find(v => v.lang.startsWith(lc));
-    if (v) return v;
-  }
-  // Fallback: English voices
+/* ── Pick Master Voice (Calm & Peaceful) ─────── */
+function pickVoice(voices) {
   return (
     voices.find(v => v.name.includes('Google UK English Male')) ||
-    voices.find(v => v.name.includes('Google US English'))     ||
-    voices.find(v => v.lang.startsWith('en'))                  ||
+    voices.find(v => v.name.includes('Microsoft David')) ||
+    voices.find(v => v.name.includes('Microsoft Ravi')) ||
+    voices.find(v => v.name.includes('Google US English')) ||
+    voices.find(v => v.lang.startsWith('en')) ||
     voices[0]
   );
 }
@@ -87,20 +68,20 @@ const VoiceAssistant = ({ onStateChange }) => {
   }, []);
 
   /* ── TTS: speak one piece ── */
-  const speakOne = useCallback((text, responseLang) => {
+  const speakOne = useCallback((text) => {
     return new Promise((resolve) => {
       const clean = cleanText(text);
       if (!clean) { resolve(); return; }
 
       const utt = new SpeechSynthesisUtterance(clean);
-      // Normalizing pitch and rate to create a calm, gentle persona across languages
-      utt.rate   = 0.95; // Slightly slower
-      utt.pitch  = 0.9;  // Slightly deeper and calmer
+      // Master Voice Acoustic Tuning (Calm & Peaceful)
+      utt.rate   = 0.9;
+      utt.pitch  = 0.85;
       utt.volume = 1.0;
-      utt.lang   = responseLang;
+      utt.lang   = 'en-US';
 
       const voices = synthRef.current?.getVoices() || [];
-      utt.voice = pickVoice(responseLang, voices);
+      utt.voice = pickVoice(voices);
 
       utt.onend   = () => resolve();
       utt.onerror = () => resolve();
@@ -109,14 +90,14 @@ const VoiceAssistant = ({ onStateChange }) => {
   }, []);
 
   /* ── Drain the sentence queue ── */
-  const drainQueue = useCallback(async (responseLang) => {
+  const drainQueue = useCallback(async () => {
     if (isSpeakingRef.current) return;
     isSpeakingRef.current = true;
     setS('speaking');
 
     while (speakQueueRef.current.length > 0) {
       const sentence = speakQueueRef.current.shift();
-      await speakOne(sentence, responseLang);
+      await speakOne(sentence);
     }
 
     isSpeakingRef.current = false;
@@ -136,7 +117,6 @@ const VoiceAssistant = ({ onStateChange }) => {
 
     let buffer = '';
     let full   = '';
-    let responseLang = 'en-IN'; // default
     speakQueueRef.current = [];
 
     try {
@@ -144,29 +124,24 @@ const VoiceAssistant = ({ onStateChange }) => {
         buffer += chunk;
         full   += chunk;
 
-        // Detect language from first meaningful chunk
-        if (full.length > 20 && responseLang === 'en-IN') {
-          responseLang = detectResponseLang(full) || 'en-IN';
-        }
-
         // Flush complete sentences immediately → low latency TTS
         const sentences = buffer.match(/[^.!?।]+[.!?।]+/g);
         if (sentences) {
           sentences.forEach(s => speakQueueRef.current.push(s));
           buffer = buffer.replace(/[^.!?।]+[.!?।]+/g, '');
-          if (!isSpeakingRef.current) drainQueue(responseLang);
+          if (!isSpeakingRef.current) drainQueue();
         }
       }
       if (buffer.trim()) {
         speakQueueRef.current.push(buffer);
-        if (!isSpeakingRef.current) drainQueue(responseLang);
+        if (!isSpeakingRef.current) drainQueue();
       }
       setReply(cleanText(full).slice(0, 130));
     } catch (err) {
       console.error(err);
       const errMsg = 'Sorry, I ran into an error. Please try again.';
       speakQueueRef.current = [errMsg];
-      drainQueue('en-IN');
+      drainQueue();
     }
   }, [drainQueue]);
 
