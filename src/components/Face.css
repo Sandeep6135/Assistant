@@ -36,6 +36,10 @@
   border-color: rgba(220, 50, 150, 0.5);
   box-shadow: 0 0 80px rgba(220, 50, 150, 0.2), inset 0 0 50px rgba(220,50,150,0.04);
 }
+.face-panel--angry {
+  border-color: rgba(255, 0, 0, 0.4);
+  box-shadow: 0 0 60px rgba(255, 0, 0, 0.15), inset 0 0 40px rgba(255,0,0,0.05);
+}
 
 /* ═══════════════════════════════════════════
    EYES ROW
@@ -113,6 +117,30 @@
   animation: speakGlow 0.35s ease-in-out infinite alternate;
 }
 
+/* ── Angry: slanted, red glow, narrowed ── */
+.eye--angry {
+  width: 92px;
+  height: 60px;
+  border-radius: 12px;
+  background: linear-gradient(145deg, #5a0000, #3a0000);
+  box-shadow: 
+    0 0 50px rgba(255, 30, 30, 0.6),
+    inset 0 0 20px rgba(255, 30, 30, 0.2);
+  animation: angryShake 0.1s ease-in-out infinite alternate;
+}
+.eyes-row .eye:first-child.eye--angry { transform: rotate(15deg); }
+.eyes-row .eye:last-child.eye--angry { transform: rotate(-15deg); }
+
+@keyframes angryShake {
+  from { transform: translateX(-1px) rotate(15deg); }
+  to { transform: translateX(1px) rotate(15deg); }
+}
+.eyes-row .eye:last-child.eye--angry { animation-name: angryShakeRight; }
+@keyframes angryShakeRight {
+  from { transform: translateX(-1px) rotate(-15deg); }
+  to { transform: translateX(1px) rotate(-15deg); }
+}
+
 @keyframes idleBlink {
   0%, 90%, 100% { transform: scaleY(1); }
   92%            { transform: scaleY(0.06); }
@@ -177,6 +205,14 @@
   background: rgba(0, 220, 255, 0.7);
   box-shadow: 0 0 12px rgba(0,220,255,0.5);
   animation: lListen 0.7s ease-in-out infinite alternate;
+}
+.mouth-line--angry {
+  width: 60px;
+  height: 6px;
+  background: rgba(255, 50, 50, 0.8);
+  border-radius: 30px 30px 0 0; /* Sad/Angry curve */
+  box-shadow: 0 0 12px rgba(255,50,50,0.5);
+  transform: translateY(8px);
 }
 @keyframes lListen {
   from { width: 44px; opacity: 0.6; }

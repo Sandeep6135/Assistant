@@ -58,6 +58,7 @@ const LABELS = {
   listening: 'LISTENING',
   thinking:  'PROCESSING',
   speaking:  'SPEAKING',
+  angry:     'AWAKENING...',
 };
 
 const VoiceAssistant = ({ onStateChange }) => {
@@ -236,10 +237,11 @@ const VoiceAssistant = ({ onStateChange }) => {
   const wake = useCallback(() => {
     setAwake(true);
     awakeRef.current = true;
-    setS('idle');
+    setS('angry');
     initializeChat();
 
     const onAudioEnd = () => {
+      setS('idle');
       startListeningCycle();
       wakeAudioRef.current.removeEventListener('ended', onAudioEnd);
     };

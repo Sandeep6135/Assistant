@@ -83,7 +83,7 @@ const Mouth = ({ state }) => (
         ))}
       </div>
     )}
-    {(state === 'idle' || state === 'listening') && (
+    {(state === 'idle' || state === 'listening' || state === 'angry') && (
       <div className={`mouth-line mouth-line--${state}`} />
     )}
     {state === 'resting' && <div className="mouth-rest" />}

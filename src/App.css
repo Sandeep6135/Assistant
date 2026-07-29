@@ -44,6 +44,7 @@ body {
 .bg-glow--listening{ background: radial-gradient(ellipse 700px 500px at 50% 45%, rgba(0,100,160,0.3) 0%, transparent 80%); }
 .bg-glow--thinking { background: radial-gradient(ellipse 500px 350px at 50% 45%, rgba(30,30,30,0.4) 0%, transparent 80%); }
 .bg-glow--speaking { background: radial-gradient(ellipse 700px 500px at 50% 45%, rgba(120,0,80,0.3) 0%, transparent 80%); }
+.bg-glow--angry    { background: radial-gradient(ellipse 700px 500px at 50% 45%, rgba(180,0,0,0.4) 0%, transparent 80%); }
 
 /* ── Header ──────────────────────────────── */
 .hdr {

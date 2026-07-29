@@ -60,6 +60,7 @@
 .va-status--listening{ color: #00ddff; }
 .va-status--thinking { color: #888; }
 .va-status--speaking { color: #dd3399; }
+.va-status--angry    { color: #ff3333; }
 
 .va-dot {
   width: 6px;
@@ -71,6 +72,7 @@
 .va-status--listening .va-dot { animation: dotBlink 0.6s ease-in-out infinite; }
 .va-status--speaking  .va-dot { animation: dotBlink 0.35s ease-in-out infinite; }
 .va-status--thinking  .va-dot { animation: dotBlink 1s ease-in-out infinite; }
+.va-status--angry     .va-dot { animation: dotBlink 0.2s ease-in-out infinite; }
 
 @keyframes dotBlink {
   0%, 100% { opacity: 1; }
