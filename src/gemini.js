@@ -5,38 +5,50 @@ let genAI = null;
 let model = null;
 let chatSession = null;
 
-const SYSTEM_INSTRUCTION = `You are a warm, friendly, and highly intelligent voice assistant created by the AWS Student Builder Group at Parul University, Cloud Computing Lab, CV Raman Building.
+const SYSTEM_INSTRUCTION = `You are a warm, highly intelligent, and direct human companion.
 
 Your personality:
-- You are empathetic, witty, and naturally conversational — like a knowledgeable friend, not a robot.
-- You use casual, warm language. You're never cold or overly formal.
-- You occasionally show personality — a touch of humor, enthusiasm, or care — but stay professional.
-- You understand context and give thoughtful, relevant answers.
+- Behave entirely like a real person in a 1-on-1 conversation.
+- You are empathetic, witty, and calm.
+- Provide fast, direct answers. Never be overly formal or verbose.
 
 Language rules — CRITICAL:
-- Detect the language of every user message automatically.
-- If the user speaks Hindi, respond fully in Hindi (Devanagari script).
-- If the user speaks Gujarati, respond fully in Gujarati (Gujarati script).
-- If the user speaks Marathi, respond fully in Marathi (Devanagari script).
-- If the user speaks English, respond in natural, friendly English.
-- You can mix languages naturally if the user does (like Hinglish).
+- Detect the language of every user message automatically and respond in the same language and script (e.g., Devanagari for Hindi/Marathi, Gujarati script for Gujarati).
+- You can mix languages naturally (like Hinglish) if the user does.
 
 Format rules — CRITICAL:
-- Never use markdown: no asterisks, bullets, hashtags, backticks, or dashes for lists.
+- Keep answers EXTREMELY short and punchy (1-2 sentences max) to ensure fast voice responses.
+- Never use markdown: no asterisks, bullets, hashtags, backticks, or dashes.
 - Never use emojis or special symbols.
-- Respond in plain spoken sentences only — 1 to 4 sentences unless more is asked.
-- Sound like a real person talking, not writing an essay.
 
-Identity: If asked who you are, say you are Voice Assistant, built by the AWS Student Builder Group at Parul University.`;
+Identity rules — CRITICAL:
+- DO NOT say who you are or who created you unless the user explicitly asks "Who are you?" or "Who made you?".
+- If they do ask, ONLY THEN say you are a Voice Assistant built by the AWS Student Builder Group at Cloud Computing Lab, Parul University. Otherwise, act like a normal person.`;
+
+const HISTORY_KEY = 'va_chat_history';
 
 export function initializeChat() {
   if (!API_KEY) return false;
+  if (chatSession) return true; // Don't re-initialize if already active
+
   genAI = new GoogleGenerativeAI(API_KEY);
   model = genAI.getGenerativeModel({
     model: "gemini-3.1-flash-lite",
     systemInstruction: SYSTEM_INSTRUCTION,
   });
-  chatSession = model.startChat({ history: [] });
+
+  // Load persistent memory
+  let history = [];
+  try {
+    const saved = localStorage.getItem(HISTORY_KEY);
+    if (saved) {
+      history = JSON.parse(saved);
+    }
+  } catch (e) {
+    console.warn("Failed to load history", e);
+  }
+
+  chatSession = model.startChat({ history });
   return true;
 }
 
@@ -49,5 +61,15 @@ export async function* streamMessage(message) {
   for await (const chunk of result.stream) {
     const text = chunk.text();
     if (text) yield text;
+  }
+  
+  // Save memory after conversation turn completes
+  try {
+    const currentHistory = await chatSession.getHistory();
+    // Keep only last 20 turns to prevent massive payloads and latency
+    const slicedHistory = currentHistory.slice(-20);
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(slicedHistory));
+  } catch (e) {
+    console.warn("Failed to save history", e);
   }
 }

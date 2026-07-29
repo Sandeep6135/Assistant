@@ -2,13 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { streamMessage, initializeChat } from '../gemini';
 import './VoiceAssistant.css';
 
-/* ── Language config ─────────────────────────────── */
-const LANGUAGES = [
-  { code: 'en-US', label: 'English', short: 'EN', flag: '🇬🇧' },
-  { code: 'hi-IN', label: 'हिंदी',   short: 'HI', flag: '🇮🇳' },
-  { code: 'gu-IN', label: 'ગુજરાતી', short: 'GU', flag: '🪔' },
-  { code: 'mr-IN', label: 'मराठी',   short: 'MR', flag: '🌺' },
-];
+// Removed LANGUAGES constant as it is no longer needed
 
 /* ── Detect script of a response string ─────────── */
 function detectResponseLang(text) {
@@ -66,7 +60,6 @@ const VoiceAssistant = ({ onStateChange }) => {
   const [transcript, setTranscript] = useState('');
   const [reply, setReply]         = useState('');
   const [awake, setAwake]         = useState(false);
-  const [lang, setLang]           = useState('en-US');
 
   const synthRef      = useRef(window.speechSynthesis);
   const recRef        = useRef(null);
@@ -75,11 +68,9 @@ const VoiceAssistant = ({ onStateChange }) => {
   const awakeRef      = useRef(false);
   const speakQueueRef = useRef([]);
   const isSpeakingRef = useRef(false);
-  const langRef       = useRef('en-US');
 
   // Keep refs in sync
   useEffect(() => { awakeRef.current = awake; }, [awake]);
-  useEffect(() => { langRef.current = lang; },   [lang]);
 
   const setS = useCallback((s) => {
     stateRef.current = s;
@@ -102,9 +93,10 @@ const VoiceAssistant = ({ onStateChange }) => {
       if (!clean) { resolve(); return; }
 
       const utt = new SpeechSynthesisUtterance(clean);
-      utt.rate   = 1.05;
-      utt.pitch  = responseLang === 'en-US' ? 0.9 : 1.0;
-      utt.volume = 1;
+      // Normalizing pitch and rate to create a calm, gentle persona across languages
+      utt.rate   = 0.95; // Slightly slower
+      utt.pitch  = 0.9;  // Slightly deeper and calmer
+      utt.volume = 1.0;
       utt.lang   = responseLang;
 
       const voices = synthRef.current?.getVoices() || [];
@@ -193,7 +185,7 @@ const VoiceAssistant = ({ onStateChange }) => {
     if (recRef.current) { try { recRef.current.abort(); } catch {} }
 
     const rec = new SR();
-    rec.lang           = langRef.current;
+    rec.lang           = 'en-IN'; // Works well for English, Hindi, and Hinglish mixtures
     rec.continuous     = false;
     rec.interimResults = true;
 
@@ -268,17 +260,7 @@ const VoiceAssistant = ({ onStateChange }) => {
     setTranscript(''); setReply('');
     synthRef.current?.cancel();
     try { recRef.current?.abort(); } catch {}
-  }, []);
-
-  /* ── Language switch ── */
-  const switchLang = (code) => {
-    setLang(code);
-    langRef.current = code;
-    if (awake) {
-      try { recRef.current?.abort(); } catch {}
-      setTimeout(startListeningCycle, 300);
-    }
-  };
+  }, [setS]);
 
   return (
     <div className="va">
