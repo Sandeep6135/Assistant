@@ -234,7 +234,16 @@ const VoiceAssistant = ({ onStateChange }) => {
 
   /* ── Wake / Sleep ── */
   const wake = useCallback(() => {
-    // Play wakeup sound immediately — pre-loaded, zero delay
+    setAwake(true);
+    awakeRef.current = true;
+    setS('idle');
+    initializeChat();
+
+    const onAudioEnd = () => {
+      startListeningCycle();
+      wakeAudioRef.current.removeEventListener('ended', onAudioEnd);
+    };
+
     try {
       // Enhance volume to 200% using Web Audio API
       if (!wakeAudioRef.current.audioCtx) {
@@ -247,16 +256,16 @@ const VoiceAssistant = ({ onStateChange }) => {
       }
       wakeAudioRef.current.audioCtx.resume();
       wakeAudioRef.current.currentTime = 0;
-      wakeAudioRef.current.play().catch(() => {});
+      wakeAudioRef.current.addEventListener('ended', onAudioEnd);
+      wakeAudioRef.current.play().catch((err) => {
+        console.warn("Play failed:", err);
+        wakeAudioRef.current.removeEventListener('ended', onAudioEnd);
+        setTimeout(startListeningCycle, 400); // Fallback
+      });
     } catch (err) {
       console.warn("Audio enhancement failed:", err);
+      setTimeout(startListeningCycle, 400); // Fallback
     }
-
-    setAwake(true);
-    awakeRef.current = true;
-    setS('idle');
-    initializeChat();
-    setTimeout(startListeningCycle, 400);
   }, [startListeningCycle]);
 
   const sleep = useCallback(() => {
