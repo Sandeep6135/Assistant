@@ -136,7 +136,7 @@ const VoiceAssistant = ({ onStateChange }) => {
 
     let buffer = '';
     let full   = '';
-    let responseLang = langRef.current;
+    let responseLang = 'en-IN'; // default
     speakQueueRef.current = [];
 
     try {
@@ -145,8 +145,8 @@ const VoiceAssistant = ({ onStateChange }) => {
         full   += chunk;
 
         // Detect language from first meaningful chunk
-        if (full.length > 20 && responseLang === langRef.current) {
-          responseLang = detectResponseLang(full) || langRef.current;
+        if (full.length > 20 && responseLang === 'en-IN') {
+          responseLang = detectResponseLang(full) || 'en-IN';
         }
 
         // Flush complete sentences immediately → low latency TTS
@@ -164,15 +164,9 @@ const VoiceAssistant = ({ onStateChange }) => {
       setReply(cleanText(full).slice(0, 130));
     } catch (err) {
       console.error(err);
-      const errMsg = langRef.current === 'hi-IN'
-        ? 'माफ़ करना, कोई समस्या आ गई। फिर से कोशिश करें।'
-        : langRef.current === 'gu-IN'
-        ? 'માફ કરો, ભૂલ આવી. ફરી પ્રયાસ કરો.'
-        : langRef.current === 'mr-IN'
-        ? 'माफ करा, चूक झाली. पुन्हा प्रयत्न करा.'
-        : 'Sorry, I ran into an error. Please try again.';
+      const errMsg = 'Sorry, I ran into an error. Please try again.';
       speakQueueRef.current = [errMsg];
-      drainQueue(langRef.current);
+      drainQueue('en-IN');
     }
   }, [drainQueue]);
 
