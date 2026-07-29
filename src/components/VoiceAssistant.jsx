@@ -5,8 +5,8 @@ import './VoiceAssistant.css';
 // Removed LANGUAGES constant as it is no longer needed
 
 const ELEVENLABS_API_KEY = import.meta.env.VITE_ELEVENLABS_API_KEY;
-// Adam: pNInz6obpgDQGcFmaJgB (Deep, calm, relaxing male voice)
-const VOICE_ID = 'pNInz6obpgDQGcFmaJgB';
+// Charlie: IKne3meq5aSn9XLyUdCD (Natural, conversational, calm male voice)
+const VOICE_ID = 'IKne3meq5aSn9XLyUdCD';
 
 async function fetchElevenLabsAudio(text) {
   if (!ELEVENLABS_API_KEY) {
@@ -53,19 +53,8 @@ function cleanText(text) {
     .trim();
 }
 
-const LABELS = {
-  resting:   'RESTING',
-  idle:      'LISTENING FOR YOU',
-  listening: 'LISTENING',
-  thinking:  'PROCESSING',
-  speaking:  'SPEAKING',
-  angry:     'AWAKENING...',
-};
-
 const VoiceAssistant = ({ onStateChange }) => {
   const [state, setState]         = useState('resting');
-  const [transcript, setTranscript] = useState('');
-  const [reply, setReply]         = useState('');
   const [awake, setAwake]         = useState(false);
 
   const currentAudioRef = useRef(null);
@@ -136,8 +125,6 @@ const VoiceAssistant = ({ onStateChange }) => {
 
   /* ── Process query via streaming ── */
   const processQuery = useCallback(async (query) => {
-    setTranscript(query);
-    setReply('');
     setS('thinking');
     if (currentAudioRef.current) {
       currentAudioRef.current.pause();
@@ -167,7 +154,6 @@ const VoiceAssistant = ({ onStateChange }) => {
         speakQueueRef.current.push(buffer);
         if (!isSpeakingRef.current) drainQueue();
       }
-      setReply(cleanText(full).slice(0, 130));
     } catch (err) {
       console.error(err);
       const errMsg = 'Sorry, I ran into an error. Please try again.';
@@ -200,13 +186,12 @@ const VoiceAssistant = ({ onStateChange }) => {
         if (e.results[i].isFinal) finalText += t;
         else interim = t;
       }
-      if (interim || finalText) { setTranscript(interim || finalText); setS('listening'); }
+      if (interim || finalText) { setS('listening'); }
     };
 
     rec.onend = () => {
       const q = finalText.trim();
       finalText = '';
-      setTranscript('');
       if (q && stateRef.current !== 'speaking' && stateRef.current !== 'thinking') {
         processQuery(q);
       } else if (awakeRef.current && stateRef.current === 'idle') {
@@ -257,8 +242,6 @@ const VoiceAssistant = ({ onStateChange }) => {
     setAwake(false);
     awakeRef.current = false;
     setS('resting');
-    setTranscript(''); setReply('');
-    synthRef.current?.cancel();
     try { recRef.current?.abort(); } catch {}
   }, [setS]);
 
