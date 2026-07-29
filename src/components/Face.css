@@ -47,7 +47,7 @@
   align-items: center;
 }
 
-/* ── Base eye ── */
+/* ── Base eye (The Sclera/Eyeball) ── */
 .eye {
   position: relative;
   display: flex;
@@ -55,68 +55,60 @@
   justify-content: center;
   transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   overflow: hidden;
+  border-radius: 50% !important; /* Force circular realistic eyes */
 }
 
-/* ── Resting: thin horizontal bar (closed eyes) ── */
+/* ── Resting: Closed eyelid (dark slit) ── */
 .eye--resting {
-  width: 60px;
-  height: 3px;
-  border-radius: 2px;
-  background: #fff;
-  opacity: 0.3;
+  width: 90px;
+  height: 6px;
+  background: #222;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.8);
+  border-radius: 4px !important;
 }
 
-/* ── Idle: medium rounded square, white ── */
+/* ── Active states (Realistic 3D Sclera) ── */
 .eye--idle {
-  width: 88px;
-  height: 76px;
-  border-radius: 26px;
-  background: #fff;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+  width: 90px;
+  height: 90px;
+  background: #fafafa;
+  box-shadow: inset 0 0 25px rgba(0,0,0,0.5), 0 4px 14px rgba(0,0,0,0.3);
   animation: idleBlink 5s infinite;
 }
 
-/* ── Listening: bright white pulse ── */
 .eye--listening {
-  width: 92px;
-  height: 80px;
-  border-radius: 28px;
-  background: #fff;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  width: 96px;
+  height: 96px;
+  background: #ffffff;
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.4), 0 0 24px rgba(255,255,255,0.4);
   animation: listenPulse 0.8s ease-in-out infinite alternate;
 }
 
-/* ── Thinking: dimmed white ── */
 .eye--thinking {
-  width: 88px;
-  height: 76px;
-  border-radius: 26px;
-  background: #eee;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+  width: 90px;
+  height: 90px;
+  background: #e0e0e0;
+  box-shadow: inset 0 0 30px rgba(0,0,0,0.6), 0 4px 14px rgba(0,0,0,0.2);
   animation: thinkFlicker 2s ease-in-out infinite;
 }
 
-/* ── Speaking: large bright white ── */
 .eye--speaking {
-  width: 106px;
-  height: 90px;
-  border-radius: 34px;
-  background: #fff;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  width: 100px;
+  height: 100px;
+  background: #ffffff;
+  box-shadow: inset 0 0 15px rgba(0,0,0,0.3), 0 10px 30px rgba(255,255,255,0.2);
   animation: speakGlow 0.35s ease-in-out infinite alternate;
 }
 
-/* ── Angry: slanted, dark grey ── */
 .eye--angry {
-  width: 92px;
-  height: 60px;
-  border-radius: 12px;
-  background: #ddd;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+  width: 90px;
+  height: 70px;
+  background: #d4d4d4;
+  box-shadow: inset 0 0 30px rgba(0,0,0,0.7), 0 4px 14px rgba(0,0,0,0.3);
   animation: angryShake 0.1s ease-in-out infinite alternate;
 }
-.eyes-row .eye:first-child.eye--angry { transform: rotate(15deg); }
-.eyes-row .eye:last-child.eye--angry { transform: rotate(-15deg); }
+.eyes-row .eye:first-child.eye--angry { transform: rotate(10deg); }
+.eyes-row .eye:last-child.eye--angry { transform: rotate(-10deg); }
 
 @keyframes angryShake {
   from { transform: translateX(-1px) rotate(15deg); }
@@ -145,23 +137,38 @@
   to   { transform: scale(1.08); }
 }
 
-/* ─── Pupil ── */
+/* ─── Pupil (Iris + Pupil) ── */
 .pupil {
-  width: 40px;
-  height: 40px;
-  background: rgba(0,0,0,0.6);
+  width: 50px;
+  height: 50px;
+  /* Realistic iris gradient: black center, dark blue iris, black rim */
+  background: radial-gradient(circle at center, #050505 30%, #1a3b5c 40%, #0a1f33 80%, #000000 100%);
   border-radius: 50%;
   transition: transform 0.08s ease-out;
-  display: flex;
-  align-items: flex-start;
-  justify-content: flex-end;
-  padding: 6px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.8);
+  position: relative;
 }
+
+/* ─── Realistic Catchlights (Shines) ── */
 .pupil-shine {
-  width: 10px;
-  height: 10px;
-  background: rgba(255,255,255,0.5);
+  width: 14px;
+  height: 14px;
+  background: rgba(255,255,255,0.9);
   border-radius: 50%;
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  box-shadow: 0 0 6px rgba(255,255,255,0.8);
+}
+.pupil-shine::after {
+  content: '';
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: rgba(255,255,255,0.7);
+  border-radius: 50%;
+  top: 16px;
+  left: 20px;
 }
 
 /* ═══════════════════════════════════════════
