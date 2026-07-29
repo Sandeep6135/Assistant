@@ -44,25 +44,23 @@ body {
 .bg-glow--speaking { background: radial-gradient(ellipse 700px 500px at 50% 45%, rgba(0,0,0,0.05) 0%, transparent 80%); }
 .bg-glow--angry    { background: radial-gradient(ellipse 700px 500px at 50% 45%, rgba(200,0,0,0.03) 0%, transparent 80%); }
 
-/* ── Header ──────────────────────────────── */
-.hdr {
-  text-align: center;
-  z-index: 1;
+/* ── Brand Header ────────────────────────── */
+.brand-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
   user-select: none;
 }
-.hdr__title {
-  font-size: clamp(1.4rem, 4vw, 2.2rem);
-  font-weight: 700;
-  letter-spacing: 0.28em;
-  color: #fff;
-  text-transform: uppercase;
+.brand-logo {
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  border-radius: 6px;
 }
-.hdr__sub {
-  margin-top: 8px;
-  font-size: clamp(0.6rem, 1.5vw, 0.72rem);
-  color: #333;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+.brand-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #111;
+  letter-spacing: -0.02em;
 }
 
 /* ── Main ────────────────────────────────── */
