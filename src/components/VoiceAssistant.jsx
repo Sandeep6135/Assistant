@@ -4,21 +4,33 @@ import './VoiceAssistant.css';
 
 // Removed LANGUAGES constant as it is no longer needed
 
-const ELEVENLABS_API_KEY = import.meta.env.VITE_ELEVENLABS_API_KEY;
+const ELEVENLABS_KEYS_STR = import.meta.env.VITE_ELEVENLABS_API_KEY || '';
+const ELEVENLABS_KEYS = ELEVENLABS_KEYS_STR.split(',').map(k => k.trim()).filter(Boolean);
+let currentElevenLabsKeyIndex = -1;
+
+function getElevenLabsKey() {
+  if (ELEVENLABS_KEYS.length === 0) return null;
+  if (currentElevenLabsKeyIndex === -1) {
+    currentElevenLabsKeyIndex = Math.floor(Math.random() * ELEVENLABS_KEYS.length);
+  }
+  return ELEVENLABS_KEYS[currentElevenLabsKeyIndex];
+}
+
 // Charlie: IKne3meq5aSn9XLyUdCD (Natural, conversational, calm male voice)
 const VOICE_ID = 'IKne3meq5aSn9XLyUdCD';
 
 async function fetchElevenLabsAudio(text) {
-  if (!ELEVENLABS_API_KEY) {
-    console.warn("ElevenLabs API Key is missing.");
-    return null;
+  const key = getElevenLabsKey();
+  if (!key) {
+    console.warn("ElevenLabs API Key is missing. Falling back to browser TTS.");
+    return "FALLBACK_TTS";
   }
   
   const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}`, {
     method: 'POST',
     headers: {
       'Accept': 'audio/mpeg',
-      'xi-api-key': ELEVENLABS_API_KEY,
+      'xi-api-key': key,
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
@@ -34,8 +46,15 @@ async function fetchElevenLabsAudio(text) {
   });
   
   if (!response.ok) {
-    console.error("ElevenLabs Error:", await response.text());
-    return null;
+    if (response.status === 429) {
+      console.warn("ElevenLabs rate limit hit. Falling back to browser TTS.");
+      if (ELEVENLABS_KEYS.length > 1) {
+        currentElevenLabsKeyIndex = (currentElevenLabsKeyIndex + 1) % ELEVENLABS_KEYS.length;
+      }
+    } else {
+      console.error("ElevenLabs Error:", await response.text());
+    }
+    return "FALLBACK_TTS";
   }
   
   const blob = await response.blob();
@@ -82,6 +101,14 @@ const VoiceAssistant = ({ onStateChange }) => {
 
       const audioUrl = await fetchElevenLabsAudio(clean);
       if (!audioUrl) { resolve(); return; }
+
+      if (audioUrl === "FALLBACK_TTS") {
+         const utterance = new SpeechSynthesisUtterance(clean);
+         utterance.onend = () => resolve();
+         utterance.onerror = () => resolve();
+         window.speechSynthesis.speak(utterance);
+         return;
+      }
 
       const audio = new Audio(audioUrl);
       currentAudioRef.current = audio;

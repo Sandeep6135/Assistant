@@ -1,6 +1,8 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+const API_KEYS_STR = import.meta.env.VITE_GEMINI_API_KEY || '';
+const API_KEYS = API_KEYS_STR.split(',').map(k => k.trim()).filter(Boolean);
+let currentApiKeyIndex = -1;
 let genAI = null;
 let currentModelIndex = 0;
 let chatSession = null;
@@ -43,12 +45,21 @@ function generateSessionId() {
   return 'sess-' + Math.random().toString(36).substring(2, 15) + Date.now().toString(36);
 }
 
+function getApiKey() {
+  if (API_KEYS.length === 0) return null;
+  if (currentApiKeyIndex === -1) {
+    currentApiKeyIndex = Math.floor(Math.random() * API_KEYS.length);
+  }
+  return API_KEYS[currentApiKeyIndex];
+}
+
 export function initializeChat() {
-  if (!API_KEY) return false;
+  const key = getApiKey();
+  if (!key) return false;
   if (!sessionId) sessionId = generateSessionId();
   if (chatSession) return true;
 
-  genAI = new GoogleGenerativeAI(API_KEY);
+  genAI = new GoogleGenerativeAI(key);
   
   try {
     const model = genAI.getGenerativeModel({
@@ -119,6 +130,7 @@ export async function* streamMessage(message) {
   let attempt = 0;
   let success = false;
   let fullResponse = '';
+  let retryDelay = 500;
 
   while (attempt < AVAILABLE_MODELS.length && !success) {
     try {
@@ -136,8 +148,33 @@ export async function* streamMessage(message) {
     } catch (err) {
       console.warn(`[Session: ${sessionId}] Model ${AVAILABLE_MODELS[currentModelIndex]} failed:`, err.message);
       
+      const isRateLimit = err.message.includes('429') || err.message.includes('503') || err.message.includes('demand');
+      if (isRateLimit && retryDelay <= 2000) {
+        console.log(`[Session: ${sessionId}] Rate limited. Waiting ${retryDelay}ms...`);
+        await new Promise(r => setTimeout(r, retryDelay));
+        retryDelay *= 2;
+        
+        // Rotate key if available
+        if (API_KEYS.length > 1) {
+          currentApiKeyIndex = (currentApiKeyIndex + 1) % API_KEYS.length;
+          console.log(`[Session: ${sessionId}] Rotating API Key...`);
+          try {
+            const oldHistory = await chatSession.getHistory();
+            genAI = new GoogleGenerativeAI(API_KEYS[currentApiKeyIndex]);
+            const model = genAI.getGenerativeModel({
+              model: AVAILABLE_MODELS[currentModelIndex],
+              systemInstruction: SYSTEM_INSTRUCTION,
+            });
+            chatSession = model.startChat({ history: oldHistory });
+          } catch(e) {}
+        }
+        continue; // Retry without bumping model index
+      }
+
       // Dynamic Model Fallback
       currentModelIndex++;
+      retryDelay = 500;
+      
       if (currentModelIndex >= AVAILABLE_MODELS.length) {
         throw new Error("All available models failed.");
       }
